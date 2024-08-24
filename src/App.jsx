@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles.css"
 import { NewTodoForm } from "./NewTodoForm"
 import { TodoList } from "./TodoList"
+import { FilterOptions } from "./FilterOptions"
 
 export default function App() {
 //---------- Declaration of Hooks -----------
@@ -66,34 +67,8 @@ const filterItems = (newFilterOption, todoItems) => {
     <>
     <div className="card-box">
       <NewTodoForm addTodoItem={addTodoItem} />
+      <FilterOptions filterOption={filterOption} handleRadioChange={handleRadioChange} />
       
-      <div className="filter-options">
-        <label>Filter Options: </label>
-        <label className="radio-label">
-          <input className="todo-radio"
-          type="radio"
-          value="completed"
-          checked={filterOption === 'completed'}
-          onChange={handleRadioChange} />
-          Completed
-        </label>
-        <label className="radio-label">
-          <input className="todo-radio"
-          type="radio"
-          value="pending"
-          checked={filterOption === 'pending'}
-          onChange={handleRadioChange} />
-          Pending
-        </label>
-        <label className="radio-label">
-          <input className="todo-radio"
-          type="radio"
-          value="none"
-          checked={filterOption === 'none'}
-          onChange={handleRadioChange} />
-          None
-        </label>
-      </div>
       <h2 className="header">Todo List</h2>
 
       <TodoList 
