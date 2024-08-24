@@ -15,9 +15,14 @@ const [todoItems, setTodoItems] = useState(() => {
 const [filterOption, setfilterOption] = useState('none')
 const [filteredItems, setFilteredItems] = useState([])
 
+//----------------For Search Feature--------------------
+const [searchQuery, setSearchQuery] = useState("")
+
+//----------------For Search and Filter Feature------------------
+
 useEffect(() => {
-  filterItems(filterOption, todoItems);
-}, [filterOption, todoItems]);
+  filterItems(filterOption, todoItems, searchQuery)
+}, [filterOption, todoItems, searchQuery])
 
 //-------------For Saving to Local Storage--------------------
 useEffect(() => {
@@ -49,7 +54,7 @@ const handleRadioChange = (e) => {
   setfilterOption(newFilterOption)
 }
 
-const filterItems = (newFilterOption, todoItems) => {
+const filterItems = (newFilterOption, todoItems, searchQuery) => {
   let filtered
 
   if (newFilterOption === "completed") {
@@ -59,7 +64,20 @@ const filterItems = (newFilterOption, todoItems) => {
   } else {
     filtered = [...todoItems]
   }
+
+  if(searchQuery !== "") {
+    filtered = filtered.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
+  }
+
   setFilteredItems(filtered)  
+}
+
+const handleSearchQuery = (value) => {
+  setSearchQuery(value)
+}
+
+const searchClear = () => {
+  setSearchQuery("")
 }
 
 //--------- What you see on screen -----------
@@ -67,7 +85,13 @@ const filterItems = (newFilterOption, todoItems) => {
     <>
     <div className="card-box">
       <NewTodoForm addTodoItem={addTodoItem} />
-      <FilterOptions filterOption={filterOption} handleRadioChange={handleRadioChange} />
+      <FilterOptions 
+        searchQuery={searchQuery} 
+        handleSearchQuery={handleSearchQuery} 
+        filterOption={filterOption} 
+        handleRadioChange={handleRadioChange}
+        searchClear={searchClear}
+      />
       
       <h2 className="header">Todo List</h2>
 

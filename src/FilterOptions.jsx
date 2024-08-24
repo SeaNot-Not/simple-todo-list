@@ -1,7 +1,6 @@
-
-
-export const FilterOptions = ({filterOption, handleRadioChange}) => {
+export const FilterOptions = ({searchQuery, handleSearchQuery, filterOption, handleRadioChange, searchClear}) => {
     return (
+      <>
         <div className="filter-options">
         <label>Filter Options: </label>
         <label className="radio-label">
@@ -29,5 +28,12 @@ export const FilterOptions = ({filterOption, handleRadioChange}) => {
           None
         </label>
       </div>
+
+      <div className="search-bar">
+        <label>Search:</label>
+        <input id="text-search" className="text-input" type="text" value={searchQuery} onChange={e => handleSearchQuery(e.target.value)}/>
+        <button onClick={searchClear} className="btn btn-search">Clear</button>
+      </div>
+      </>
     )
 }
