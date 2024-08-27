@@ -61,7 +61,7 @@ export function TodoItems({
           >
             ✔
           </button>
-          <button className="btn btn-danger" onClick={() => handleResetButton}>
+          <button className="btn btn-danger" onClick={handleResetButton}>
             ✖
           </button>
           <input
