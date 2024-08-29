@@ -3,17 +3,11 @@ import "./styles.css";
 import { NewTodoForm } from "./NewTodoForm";
 import { TodoList } from "./TodoList";
 import { FilterOptions } from "./FilterOptions";
+import useTodoList from "./hooks/useTodoList";
 
 export default function App() {
-  const [todoItems, setTodoItems] = useState(() => {
-    const savedItems = localStorage.getItem("ITEMS");
-    return savedItems == null ? [] : JSON.parse(savedItems);
-  });
-
-  //---------- For Saving to Local Storage ------------
-  useEffect(() => {
-    localStorage.setItem("ITEMS", JSON.stringify(todoItems));
-  }, [todoItems]);
+  // Custom Hook Todo List
+  const [todoItems, setTodoItems] = useTodoList("ITEMS");
 
   //----------------- Functions -------------------------
   const addTodoItem = (title) => {
