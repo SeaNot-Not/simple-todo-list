@@ -1,21 +1,13 @@
-import { TodoItems } from "./TodoItems"
+import { TodoItems } from "./TodoItems";
+import { ifNoTodoItemsDisplay } from "./utils/ConditionUtilities";
 
-export function TodoList({todoItems, toggleTodoItem, deleteItem, setTodoItems}) {
-
-    return (
-        <ul className="list">
-        {todoItems.length === 0 && "No Todo Items"}
-        {todoItems.map(todo => { // Renders everytime there is changes in state.
-          return (
-            <TodoItems
-            {...todo}
-            key={todo.id}
-            toggleTodoItem={toggleTodoItem}
-            deleteItem={deleteItem}
-            setTodoItems={setTodoItems}
-        />
-          )
-        })}
-      </ul>
-    )
+export function TodoList({ todoItems }) {
+  return (
+    <ul className="list">
+      {ifNoTodoItemsDisplay(todoItems, "No Todo Items")}
+      {todoItems.map((todo) => {
+        return <TodoItems {...todo} key={todo.id} />;
+      })}
+    </ul>
+  );
 }

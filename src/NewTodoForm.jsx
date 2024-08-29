@@ -1,25 +1,24 @@
-import { useState } from "react"
+import { useContext } from "react";
+import { TodoButton } from "./components/TodoButton";
+import { useNewItem } from "./hooks/useNewItem";
+import { TodoContext } from "./context/TodoContext";
+import { TodoTextInput } from "./components/TodoTextInput";
 
-export function NewTodoForm({addTodoItem}) {
-    const [newItem, setNewItem] = useState("")
+export function NewTodoForm() {
+  const { addTodoItem } = useContext(TodoContext);
+  const { newItem, setNewItem, handleSubmit } = useNewItem({ addTodoItem });
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        if(newItem === "") {
-          alert("Please input a string!")
-        } else {
-          addTodoItem(newItem)
-          setNewItem("")
-        } 
-      }
-
-    return (
-        <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          <label htmlFor="item">New Item</label>
-          <input className="text-input" value={newItem} onChange={e => setNewItem(e.target.value)} type="text" id="item" />
-        </div>
-        <button className="btn btn-add">Add</button>
-      </form>
-    )
+  return (
+    <form onSubmit={handleSubmit} className="new-item-form">
+      <div className="form-row">
+        <label htmlFor="item">New Item</label>
+        <TodoTextInput
+          value={newItem}
+          onChange={(e) => setNewItem(e.target.value)}
+          id={"item"}
+        />
+      </div>
+      <TodoButton buttonText={"Add"} onClick={null} className={"btn btn-add"} />
+    </form>
+  );
 }

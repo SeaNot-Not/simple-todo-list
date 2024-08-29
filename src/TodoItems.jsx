@@ -1,84 +1,68 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { TodoContext } from "./context/TodoContext";
+import { useTodoEdit } from "./hooks/useTodoEdit";
+import { TodoButton } from "./components/TodoButton";
+import { TodoTextInput } from "./components/TodoTextInput";
+import { TodoCheckboxInput } from "./components/TodoCheckboxInput";
+import { TodoLabel } from "./components/TodoLabel";
+import { sameIDBetweenTodoItemAndEditingItem } from "./utils/ConditionUtilities";
+import { doesUserIsEditingAnItem } from "./utils/ConditionUtilities";
 
-export function TodoItems({
-  id,
-  title,
-  completed,
-  toggleTodoItem,
-  deleteItem,
-  setTodoItems,
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [itemEditing, setItemEditing] = useState("");
-  const [editedTodo, setEditedTodo] = useState("");
+export function TodoItems({ id, title, completed }) {
+  // Context Provider TodoContext
+  const { toggleTodoItem, updateTodoItem, deleteItem } =
+    useContext(TodoContext);
 
-  const handleEditButton = (id) => {
-    setIsEditing(true);
-    setItemEditing(id);
-  };
-
-  const handleResetButton = () => {
-    setIsEditing(false);
-    setEditedTodo("");
-    setItemEditing("");
-  };
-
-  const handleSaveButton = (itemEditing, newTodo) => {
-    if (newTodo === "") {
-      alert("Please input a string!");
-    } else {
-      setTodoItems((todos) => {
-        return todos.map((todo) => {
-          if (itemEditing === todo.id) {
-            return { ...todo, title: newTodo };
-          } else {
-            return todo;
-          }
-        });
-      });
-      setIsEditing(false);
-      setEditedTodo("");
-      setItemEditing("");
-    }
-  };
+  // Custom Hook useTodoEdit
+  const {
+    itemEditingID,
+    isEditing,
+    editedTodo,
+    handleEditedTodoTextInput,
+    handleEditButton,
+    handleResetButton,
+    handleSaveButton,
+  } = useTodoEdit();
 
   return (
     <li>
-      <label>
-        <input
-          className="todo-checkbox"
-          type="checkbox"
+      <TodoLabel labelText={title}>
+        <TodoCheckboxInput
           checked={completed}
           onChange={(e) => toggleTodoItem(id, e.target.checked)}
         />
-        {title}
-      </label>
-      {itemEditing === id && isEditing ? (
+      </TodoLabel>
+      {sameIDBetweenTodoItemAndEditingItem(itemEditingID, id) &&
+      doesUserIsEditingAnItem(isEditing) ? (
         <>
-          <button
-            onClick={() => handleSaveButton(id, editedTodo)}
-            className="btn btn-edit"
-          >
-            ✔
-          </button>
-          <button className="btn btn-danger" onClick={handleResetButton}>
-            ✖
-          </button>
-          <input
+          <TodoButton
+            buttonText={"✔"}
+            onClick={() => handleSaveButton(id, editedTodo, updateTodoItem)}
+            className={"btn btn-edit"}
+          />
+          <TodoButton
+            buttonText={"✖"}
+            onClick={handleResetButton}
+            className={"btn btn-danger"}
+          />
+          <TodoTextInput
             value={editedTodo}
-            onChange={(e) => setEditedTodo(e.target.value)}
-            className="text-input"
-            type="text"
+            onChange={(e) => handleEditedTodoTextInput(e.target.value)}
+            className={"text-input"}
           />
         </>
       ) : (
         <>
-          <button onClick={() => handleEditButton(id)} className="btn btn-edit">
-            Edit
-          </button>
-          <button className="btn btn-danger" onClick={() => deleteItem(id)}>
-            Delete
-          </button>
+          <TodoButton
+            buttonText={"Edit"}
+            onClick={() => handleEditButton(id)}
+            className={"btn btn-edit"}
+          />
+          <TodoButton
+            buttonText={"Delete"}
+            onClick={() => deleteItem(id)}
+            className={"btn btn-danger"}
+          />
         </>
       )}
     </li>
