@@ -3,12 +3,41 @@ import "./styles.css";
 import { NewTodoForm } from "./NewTodoForm";
 import { TodoList } from "./TodoList";
 import { FilterOptions } from "./FilterOptions";
-import { useTodoItems } from "./useTodoItems.js";
 
 export default function App() {
-  //Custom Hook for Todo Items State
-  const [todoItems, setTodoItems, addTodoItem, toggleTodoItem, deleteItem] =
-    useTodoItems();
+  const [todoItems, setTodoItems] = useState(() => {
+    const savedItems = localStorage.getItem("ITEMS");
+    return savedItems == null ? [] : JSON.parse(savedItems);
+  });
+
+  //---------- For Saving to Local Storage ------------
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todoItems));
+  }, [todoItems]);
+
+  //----------------- Functions -------------------------
+  const addTodoItem = (title) => {
+    //Add Todo Item
+    setTodoItems((todos) => {
+      return [...todos, { id: crypto.randomUUID(), title, completed: false }];
+    });
+  };
+
+  const toggleTodoItem = (id, completed) => {
+    //Toggle Todo Item
+    return setTodoItems((todos) => {
+      return todos.map((todo) =>
+        todo.id === id ? { ...todo, completed } : todo
+      );
+    });
+  };
+
+  const deleteItem = (id) => {
+    // Delete Item Function
+    return setTodoItems((todos) => {
+      return todos.filter((todo) => id !== todo.id);
+    });
+  };
 
   //---------------For Sorting Options----------------
   const [filterOption, setfilterOption] = useState("none");
