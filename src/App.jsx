@@ -2,58 +2,33 @@ import { useEffect, useState } from "react";
 import "./styles.css";
 import { NewTodoForm } from "./NewTodoForm";
 import { TodoList } from "./TodoList";
+import { FilterOptions } from "./FilterOptions";
+import { useTodoItems } from "./useTodoItems.js";
 
 export default function App() {
-  //---------- Declaration of Hooks -----------
-  const [todoItems, setTodoItems] = useState(() => {
-    const savedItems = localStorage.getItem("ITEMS");
-    return savedItems == null ? [] : JSON.parse(savedItems);
-  });
+  //Custom Hook for Todo Items State
+  const [todoItems, setTodoItems, addTodoItem, toggleTodoItem, deleteItem] =
+    useTodoItems();
 
   //---------------For Sorting Options----------------
   const [filterOption, setfilterOption] = useState("none");
   const [filteredItems, setFilteredItems] = useState([]);
 
+  //----------------For Search Feature--------------------
+  const [searchQuery, setSearchQuery] = useState("");
+
+  //----------------For Search and Filter Feature------------------
+
   useEffect(() => {
-    filterItems(filterOption, todoItems);
-  }, [filterOption, todoItems]);
-
-  //-------------For Saving to Local Storage--------------------
-  useEffect(() => {
-    localStorage.setItem("ITEMS", JSON.stringify(todoItems));
-  }, [todoItems]);
-
-  //--------- Functions -----------
-
-  const addTodoItem = (title) => {
-    //Add Todo Item
-    setTodoItems((todos) => {
-      return [...todos, { id: crypto.randomUUID(), title, completed: false }];
-    });
-  };
-
-  const toggleTodoItem = (id, completed) => {
-    //Toggle Todo Item
-    return setTodoItems((todos) => {
-      return todos.map((todo) =>
-        todo.id === id ? { ...todo, completed } : todo
-      );
-    });
-  };
-
-  const deleteItem = (id) => {
-    // Delete Item Function
-    return setTodoItems((todos) => {
-      return todos.filter((todo) => id !== todo.id);
-    });
-  };
+    filterItems(filterOption, todoItems, searchQuery);
+  }, [filterOption, todoItems, searchQuery]);
 
   const handleRadioChange = (e) => {
     const newFilterOption = e.target.value;
     setfilterOption(newFilterOption);
   };
 
-  const filterItems = (newFilterOption, todoItems) => {
+  const filterItems = (newFilterOption, todoItems, searchQuery) => {
     let filtered;
 
     if (newFilterOption === "completed") {
@@ -63,7 +38,22 @@ export default function App() {
     } else {
       filtered = [...todoItems];
     }
+
+    if (searchQuery !== "") {
+      filtered = filtered.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
     setFilteredItems(filtered);
+  };
+
+  const handleSearchQuery = (value) => {
+    setSearchQuery(value);
+  };
+
+  const searchClear = () => {
+    setSearchQuery("");
   };
 
   //--------- What you see on screen -----------
@@ -71,40 +61,14 @@ export default function App() {
     <>
       <div className="card-box">
         <NewTodoForm addTodoItem={addTodoItem} />
+        <FilterOptions
+          searchQuery={searchQuery}
+          handleSearchQuery={handleSearchQuery}
+          filterOption={filterOption}
+          handleRadioChange={handleRadioChange}
+          searchClear={searchClear}
+        />
 
-        <div className="filter-options">
-          <label>Filter Options: </label>
-          <label className="radio-label">
-            <input
-              className="todo-radio"
-              type="radio"
-              value="completed"
-              checked={filterOption === "completed"}
-              onChange={handleRadioChange}
-            />
-            Completed
-          </label>
-          <label className="radio-label">
-            <input
-              className="todo-radio"
-              type="radio"
-              value="pending"
-              checked={filterOption === "pending"}
-              onChange={handleRadioChange}
-            />
-            Pending
-          </label>
-          <label className="radio-label">
-            <input
-              className="todo-radio"
-              type="radio"
-              value="none"
-              checked={filterOption === "none"}
-              onChange={handleRadioChange}
-            />
-            None
-          </label>
-        </div>
         <h2 className="header">Todo List</h2>
 
         <TodoList
